@@ -110,16 +110,18 @@
           "The screen has 3 columns: Series | Threads | Viewer.",
           "Series are optional folders that group threads.",
           "Threads contain responses (posts).",
-          "Drag column borders to resize widths."
+          "Drag column borders to resize widths.",
+          "Use the BG toggle in the viewer header to switch to white background mode."
         ]
       },
       {
         "title": "Adding Data",
         "items": [
-          "{icon:paste} Paste: Paste 2ch/5ch text copied from the web to parse it.",
-          "{icon:upload} Import: Load a .laa file.",
+          "{icon:paste} Paste: Paste 2ch/5ch text from the web. Set source language and title.",
+          "{icon:upload} Import: Load a .laa file. If a series is selected, threads are added to it.",
           "{icon:plus} Create: Create an empty series/thread.",
-          "Use the {icon:plus} button in the viewer header to add responses manually. Specify a sequence number to insert at a specific position."
+          "Use the {icon:plus} button in the viewer header to add responses. Set sequence, name, ID, and date.",
+          "Cannot add a response with an existing sequence number."
         ]
       },
       {
@@ -128,28 +130,35 @@
           "{icon:pencil} Edit series/thread/response (switch locale in dropdown).",
           "{icon:trash} Delete items. Deleting a series also deletes all its threads.",
           "Drag & drop threads onto series items to move them.",
-          "Drop onto 'All' to unassign from a series."
+          "Drop onto 'All' to unassign from a series.",
+          "Drag & drop threads within the list to reorder.",
+          "Tags use badge-style input with autocomplete from existing tags. Add with Enter/comma, remove with Backspace."
         ]
       },
       {
         "title": "Translation",
         "items": [
-          "First configure LLM provider, API key, and model in Settings.",
+          "Configure LLM provider, API key, and model in Settings. (OpenAI, Gemini, Claude, Ollama supported)",
+          "Ollama allows free local translation without an API key.",
+          "Translation works block-by-block: regex detects Japanese sentences, then LLM judges meaning + translates.",
           "Translate button in viewer header: translates thread title + all responses in parallel.",
-          "Per-response translate button: translates a single response.",
-          "Hold Shift + click to force re-translate (ignores existing translations).",
+          "Per-response translate button (visible on hover): translates a single response.",
+          "Hold Shift to highlight Japanese blocks. Shift+click translates that block only.",
+          "Hold Shift + click translate buttons to force re-translate.",
           "Drag-select text to reveal a selection translate button.",
-          "Remove Translation button deletes translation for a specific response.",
-          "Adjust concurrent translations in Settings (default: 3)."
+          "Remove translation: per-response or all at once.",
+          "Cancel button stops translation in progress. Completed translations are kept.",
+          "Status bar at bottom shows progress, ETA, and block-level logs.",
+          "Settings: concurrent translations, batch block translation (sends all blocks in one API call)."
         ]
       },
       {
         "title": "Export",
         "items": [
-          "{icon:download} Export series or thread as a .laa file.",
-          ".laa files can be shared with other users.",
-          "Series export: includes series header + all threads.",
-          "Thread export: includes only that thread."
+          "{icon:download} Export as .laa file for sharing with other users.",
+          "Series export: series header + all threads. Thread export: that thread only.",
+          "HTML export: series exports as per-thread files with prev/next navigation.",
+          "Thread HTML exports as a single file."
         ]
       },
       {
@@ -158,7 +167,14 @@
           "Change app language in Settings (Korean / English / Japanese).",
           "All data fields are stored per locale.",
           "Switch locale in the edit dropdown to edit different translations.",
-          "If no data exists for current language, fallback order: English → Japanese → Korean."
+          "If no data exists for current language, fallback order: English, Japanese, Korean."
+        ]
+      },
+      {
+        "title": "Data Management",
+        "items": [
+          "Settings > Data Management: open data folder or reset all data.",
+          "Reset deletes DB, settings, and API keys."
         ]
       }
     ]
