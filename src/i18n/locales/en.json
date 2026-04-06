@@ -1,0 +1,172 @@
+{
+  "loading": "Loading...",
+  "error": {
+    "dbInit": "Database initialization failed"
+  },
+  "app": {
+    "title": "LibrAA"
+  },
+  "series": {
+    "title": "Series",
+    "all": "All",
+    "noSeries": "No series",
+    "unnamed": "Unnamed series",
+    "create": "Add Series",
+    "delete": "Delete Series",
+    "deleteConfirm": "Are you sure you want to delete this series?"
+  },
+  "thread": {
+    "title": "Threads",
+    "noThreads": "No threads",
+    "unnamed": "Unnamed thread",
+    "create": "Add Thread",
+    "delete": "Delete Thread",
+    "deleteConfirm": "Are you sure you want to delete this thread?",
+    "responses": "{{count}} responses",
+    "sortOrder": "Order"
+  },
+  "response": {
+    "title": "Viewer",
+    "noResponses": "No responses",
+    "selectThread": "Select a thread",
+    "anonymous": "Anonymous",
+    "add": "Add Response",
+    "newBody": "Enter body text...",
+    "sequence": "Seq",
+    "whiteBg": "White background",
+    "seqExists": "This sequence number already exists.",
+    "deleteConfirm": "Delete this response?"
+  },
+  "import": {
+    "paste": "Paste",
+    "pasteTitle": "Paste Data",
+    "pasteDescription": "Paste thread data copied from the web",
+    "pasteHint": "Paste 2ch/5ch format text here...",
+    "parse": "Parse",
+    "preview": "Preview",
+    "save": "Save",
+    "importFile": "Import File",
+    "parseSuccess": "Parsed {{count}} responses",
+    "parseFailed": "Parse failed",
+    "sourceLanguage": "Source Language"
+  },
+  "export": {
+    "exportSeries": "Export Series",
+    "exportThread": "Export Thread",
+    "exportHtml": "Export as HTML"
+  },
+  "translate": {
+    "translate": "Translate",
+    "translating": "Translating...",
+    "targetLang": "Target Language",
+    "progress": "Translating {{current}}/{{total}}",
+    "done": "Translation complete",
+    "error": "Translation failed",
+    "forceTranslate": "Force Translate",
+    "translateSelection": "Translate Selection",
+    "remove": "Remove",
+    "cancel": "Cancel",
+    "removeAll": "Remove All",
+    "removeAllConfirm": "Remove all translations for this thread?",
+    "queueDone": "Done {{done}}/{{total}}",
+    "queuePending": "Pending",
+    "queueRetrying": "Retrying",
+    "typeBatch": "Batch",
+    "typeSingle": "Single",
+    "typeSelection": "Selection",
+    "notMeaningful": "Not meaningful (skipped)",
+    "cancelled": "Cancelled",
+    "logEmpty": "Translation log",
+    "clearLog": "Clear log"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "llm": {
+      "title": "LLM Settings",
+      "provider": "Provider",
+      "apiKey": "API Key",
+      "model": "Model",
+      "save": "Save",
+      "saved": "Saved",
+      "concurrency": "Concurrent Translations",
+      "batchBlocks": "Batch Block Translation",
+      "batchBlocksDesc": "Send all blocks in one API call per response (saves API calls)"
+    }
+  },
+  "manual": {
+    "title": "User Guide",
+    "sections": [
+      {
+        "title": "Layout",
+        "items": [
+          "The screen has 3 columns: Series | Threads | Viewer.",
+          "Series are optional folders that group threads.",
+          "Threads contain responses (posts).",
+          "Drag column borders to resize widths."
+        ]
+      },
+      {
+        "title": "Adding Data",
+        "items": [
+          "{icon:paste} Paste: Paste 2ch/5ch text copied from the web to parse it.",
+          "{icon:upload} Import: Load a .laa file.",
+          "{icon:plus} Create: Create an empty series/thread.",
+          "Use the {icon:plus} button in the viewer header to add responses manually. Specify a sequence number to insert at a specific position."
+        ]
+      },
+      {
+        "title": "Editing & Deleting",
+        "items": [
+          "{icon:pencil} Edit series/thread/response (switch locale in dropdown).",
+          "{icon:trash} Delete items. Deleting a series also deletes all its threads.",
+          "Drag & drop threads onto series items to move them.",
+          "Drop onto 'All' to unassign from a series."
+        ]
+      },
+      {
+        "title": "Translation",
+        "items": [
+          "First configure LLM provider, API key, and model in Settings.",
+          "Translate button in viewer header: translates thread title + all responses in parallel.",
+          "Per-response translate button: translates a single response.",
+          "Hold Shift + click to force re-translate (ignores existing translations).",
+          "Drag-select text to reveal a selection translate button.",
+          "Remove Translation button deletes translation for a specific response.",
+          "Adjust concurrent translations in Settings (default: 3)."
+        ]
+      },
+      {
+        "title": "Export",
+        "items": [
+          "{icon:download} Export series or thread as a .laa file.",
+          ".laa files can be shared with other users.",
+          "Series export: includes series header + all threads.",
+          "Thread export: includes only that thread."
+        ]
+      },
+      {
+        "title": "Multilingual Support",
+        "items": [
+          "Change app language in Settings (Korean / English / Japanese).",
+          "All data fields are stored per locale.",
+          "Switch locale in the edit dropdown to edit different translations.",
+          "If no data exists for current language, fallback order: English → Japanese → Korean."
+        ]
+      }
+    ]
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "confirm": "Confirm",
+    "name": "Name",
+    "author": "Author",
+    "link": "Link",
+    "tags": "Tags",
+    "date": "Date"
+  }
+}

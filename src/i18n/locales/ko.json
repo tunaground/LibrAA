@@ -1,0 +1,172 @@
+{
+  "loading": "로딩 중...",
+  "error": {
+    "dbInit": "데이터베이스 초기화 실패"
+  },
+  "app": {
+    "title": "LibrAA"
+  },
+  "series": {
+    "title": "시리즈",
+    "all": "전체",
+    "noSeries": "시리즈 없음",
+    "unnamed": "이름 없는 시리즈",
+    "create": "시리즈 추가",
+    "delete": "시리즈 삭제",
+    "deleteConfirm": "이 시리즈를 삭제하시겠습니까?"
+  },
+  "thread": {
+    "title": "스레드",
+    "noThreads": "스레드 없음",
+    "unnamed": "이름 없는 스레드",
+    "create": "스레드 추가",
+    "delete": "스레드 삭제",
+    "deleteConfirm": "이 스레드를 삭제하시겠습니까?",
+    "responses": "{{count}}개 리스폰스",
+    "sortOrder": "순서"
+  },
+  "response": {
+    "title": "뷰어",
+    "noResponses": "리스폰스 없음",
+    "selectThread": "스레드를 선택하세요",
+    "anonymous": "익명",
+    "add": "리스폰스 추가",
+    "newBody": "본문을 입력하세요...",
+    "sequence": "번호",
+    "whiteBg": "흰 배경",
+    "seqExists": "이미 사용 중인 번호입니다.",
+    "deleteConfirm": "이 리스폰스를 삭제하시겠습니까?"
+  },
+  "import": {
+    "paste": "붙여넣기",
+    "pasteTitle": "데이터 붙여넣기",
+    "pasteDescription": "웹에서 복사한 스레드 데이터를 붙여넣으세요",
+    "pasteHint": "2ch/5ch 형식의 텍스트를 여기에 붙여넣으세요...",
+    "parse": "파싱",
+    "preview": "미리보기",
+    "save": "저장",
+    "importFile": "파일 가져오기",
+    "parseSuccess": "{{count}}개 리스폰스를 파싱했습니다",
+    "parseFailed": "파싱 실패",
+    "sourceLanguage": "원문 언어"
+  },
+  "export": {
+    "exportSeries": "시리즈 내보내기",
+    "exportThread": "스레드 내보내기",
+    "exportHtml": "HTML로 내보내기"
+  },
+  "translate": {
+    "translate": "번역",
+    "translating": "번역 중...",
+    "targetLang": "대상 언어",
+    "progress": "{{current}}/{{total}} 번역 중",
+    "done": "번역 완료",
+    "error": "번역 실패",
+    "forceTranslate": "강제 번역",
+    "translateSelection": "선택 번역",
+    "remove": "번역 제거",
+    "cancel": "취소",
+    "removeAll": "전체 번역 제거",
+    "removeAllConfirm": "이 스레드의 모든 번역을 제거하시겠습니까?",
+    "queueDone": "번역 완료 {{done}}/{{total}}",
+    "queuePending": "대기",
+    "queueRetrying": "재시도 대기",
+    "typeBatch": "전체",
+    "typeSingle": "개별",
+    "typeSelection": "선택",
+    "notMeaningful": "의미 없음 (스킵)",
+    "cancelled": "취소됨",
+    "logEmpty": "번역 로그",
+    "clearLog": "로그 지우기"
+  },
+  "settings": {
+    "title": "설정",
+    "language": "언어",
+    "llm": {
+      "title": "LLM 설정",
+      "provider": "제공자",
+      "apiKey": "API 키",
+      "model": "모델",
+      "save": "저장",
+      "saved": "저장됨",
+      "concurrency": "동시 번역 수",
+      "batchBlocks": "블록 배치 번역",
+      "batchBlocksDesc": "리스폰스 내 블록들을 한 번에 묶어 요청 (API 호출 절약)"
+    }
+  },
+  "manual": {
+    "title": "사용 가이드",
+    "sections": [
+      {
+        "title": "기본 구조",
+        "items": [
+          "화면은 시리즈 | 스레드 | 뷰어 3단 구성입니다.",
+          "시리즈는 여러 스레드를 묶는 폴더입니다 (선택사항).",
+          "스레드는 리스폰스(게시글)의 모음입니다.",
+          "각 칼럼 경계를 드래그하여 너비를 조절할 수 있습니다."
+        ]
+      },
+      {
+        "title": "데이터 추가",
+        "items": [
+          "{icon:paste} 붙여넣기: 웹에서 복사한 2ch/5ch 텍스트를 붙여넣어 파싱합니다.",
+          "{icon:upload} 가져오기: .laa 파일을 불러옵니다.",
+          "{icon:plus} 새로 만들기: 빈 시리즈/스레드를 생성합니다.",
+          "뷰어 헤더의 {icon:plus} 버튼으로 리스폰스를 직접 추가할 수 있습니다. 시퀀스 번호를 지정하여 원하는 위치에 삽입할 수 있습니다."
+        ]
+      },
+      {
+        "title": "편집 & 삭제",
+        "items": [
+          "{icon:pencil} 시리즈/스레드/리스폰스 편집 (다국어 로케일 전환 가능).",
+          "{icon:trash} 항목 삭제. 시리즈 삭제 시 하위 스레드도 함께 삭제됩니다.",
+          "스레드를 시리즈 항목에 드래그&드롭하면 해당 시리즈로 이동합니다.",
+          "'전체'에 드롭하면 시리즈 연결이 해제됩니다."
+        ]
+      },
+      {
+        "title": "번역",
+        "items": [
+          "설정에서 LLM 제공자, API 키, 모델을 먼저 설정하세요.",
+          "뷰어 헤더의 번역 버튼: 스레드 타이틀 + 전체 리스폰스를 병렬 번역합니다.",
+          "리스폰스별 번역 버튼: 개별 리스폰스만 번역합니다.",
+          "Shift를 누른 상태에서 클릭하면 기존 번역을 무시하고 강제 재번역합니다.",
+          "텍스트를 드래그 선택하면 선택 부분만 번역하는 버튼이 나타��니다.",
+          "번역 제거 버튼으로 특정 리스폰스의 번역을 삭제할 수 있습니다.",
+          "동시 번역 수는 설정에서 조절할 수 있습니다 (기본: 3)."
+        ]
+      },
+      {
+        "title": "내보내기",
+        "items": [
+          "{icon:download} 시리즈 또는 스레드를 .laa 파일로 내보냅니다.",
+          ".laa 파일은 다른 사용자와 공유할 수 있습니다.",
+          "시리즈 단위 내보내기: 시리즈 헤더 + 모든 스레드 포함.",
+          "스레드 단위 내보내기: 해당 스레드만 포함."
+        ]
+      },
+      {
+        "title": "다국어 지원",
+        "items": [
+          "설정에서 앱 언어를 한국어/영어/일본어로 변경할 수 있습니다.",
+          "모든 데이터 필드는 로케일별로 저장됩니다.",
+          "편집 시 로케일 드롭다운으로 언어를 전환할 수 있습니다.",
+          "해당 언어 데이터가 없으면 영어 → 일본어 → 한국어 순으로 대체 표시됩니다."
+        ]
+      }
+    ]
+  },
+  "common": {
+    "save": "저장",
+    "cancel": "취소",
+    "delete": "삭제",
+    "edit": "편집",
+    "close": "닫기",
+    "confirm": "확인",
+    "name": "이름",
+    "author": "작성자",
+    "link": "링크",
+    "tags": "태그",
+    "date": "날짜"
+  }
+}

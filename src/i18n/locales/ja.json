@@ -1,0 +1,172 @@
+{
+  "loading": "読み込み中...",
+  "error": {
+    "dbInit": "データベースの初期化に失敗しました"
+  },
+  "app": {
+    "title": "LibrAA"
+  },
+  "series": {
+    "title": "シリーズ",
+    "all": "すべて",
+    "noSeries": "シリーズなし",
+    "unnamed": "名前なしシリーズ",
+    "create": "シリーズ追加",
+    "delete": "シリーズ削除",
+    "deleteConfirm": "このシリーズを削除しますか？"
+  },
+  "thread": {
+    "title": "スレッド",
+    "noThreads": "スレッドなし",
+    "unnamed": "名前なしスレッド",
+    "create": "スレッド追加",
+    "delete": "スレッド削除",
+    "deleteConfirm": "このスレッドを削除しますか？",
+    "responses": "{{count}}件のレスポンス",
+    "sortOrder": "順番"
+  },
+  "response": {
+    "title": "ビューア",
+    "noResponses": "レスポンスなし",
+    "selectThread": "スレッドを選択してください",
+    "anonymous": "匿名",
+    "add": "レスポンス追加",
+    "newBody": "本文を入力してください...",
+    "sequence": "番号",
+    "whiteBg": "白背景",
+    "seqExists": "この番号は既に使用されています。",
+    "deleteConfirm": "このレスポンスを削除しますか？"
+  },
+  "import": {
+    "paste": "貼り付け",
+    "pasteTitle": "データ貼り付け",
+    "pasteDescription": "ウェブからコピーしたスレッドデータを貼り付けてください",
+    "pasteHint": "2ch/5ch形式のテキストをここに貼り付けてください...",
+    "parse": "パース",
+    "preview": "プレビュー",
+    "save": "保存",
+    "importFile": "ファイル読み込み",
+    "parseSuccess": "{{count}}件のレスポンスをパースしました",
+    "parseFailed": "パース失敗",
+    "sourceLanguage": "原文の言語"
+  },
+  "export": {
+    "exportSeries": "シリーズ書き出し",
+    "exportThread": "スレッド書き出し",
+    "exportHtml": "HTMLで書き出し"
+  },
+  "translate": {
+    "translate": "翻訳",
+    "translating": "翻訳中...",
+    "targetLang": "対象言語",
+    "progress": "{{current}}/{{total}} 翻訳中",
+    "done": "翻訳完了",
+    "error": "翻訳失敗",
+    "forceTranslate": "強制翻訳",
+    "translateSelection": "選択翻訳",
+    "remove": "翻訳削除",
+    "cancel": "キャンセル",
+    "removeAll": "全翻訳削除",
+    "removeAllConfirm": "このスレッドの翻訳をすべて削除しますか？",
+    "queueDone": "完了 {{done}}/{{total}}",
+    "queuePending": "待機",
+    "queueRetrying": "再試行待ち",
+    "typeBatch": "一括",
+    "typeSingle": "個別",
+    "typeSelection": "選択",
+    "notMeaningful": "意味なし（スキップ）",
+    "cancelled": "キャンセル済み",
+    "logEmpty": "翻訳ログ",
+    "clearLog": "ログクリア"
+  },
+  "settings": {
+    "title": "設定",
+    "language": "言語",
+    "llm": {
+      "title": "LLM設定",
+      "provider": "プロバイダー",
+      "apiKey": "APIキー",
+      "model": "モデル",
+      "save": "保存",
+      "saved": "保存済み",
+      "concurrency": "同時翻訳数",
+      "batchBlocks": "ブロック一括翻訳",
+      "batchBlocksDesc": "レスポンス内のブロックを1回のAPI呼び出しで処理（API節約）"
+    }
+  },
+  "manual": {
+    "title": "使い方ガイド",
+    "sections": [
+      {
+        "title": "基本構成",
+        "items": [
+          "画面はシリーズ｜スレッド｜ビューアの3カラム構成です。",
+          "シリーズは複数のスレッドをまとめるフォルダです（任意）。",
+          "スレッドはレスポンス（投稿）の集まりです。",
+          "カラムの境界をドラッグして幅を調整できます。"
+        ]
+      },
+      {
+        "title": "データ追加",
+        "items": [
+          "{icon:paste} 貼り付け：ウェブからコピーした2ch/5chテキストを貼り付けてパースします。",
+          "{icon:upload} 読み込み：.laaファイルを読み込みます。",
+          "{icon:plus} 新規作成：空のシリーズ/スレッドを作成します。",
+          "ビューアヘッダーの{icon:plus}ボタンでレスポンスを手動追加できます。シーケンス番号を指定して任意の位置に挿入できます。"
+        ]
+      },
+      {
+        "title": "編集と削除",
+        "items": [
+          "{icon:pencil} シリーズ/スレッド/レスポンスを編集（ロケール切替可能）。",
+          "{icon:trash} 項目を削除。シリーズ削除時は配下のスレッドも削除されます。",
+          "スレッドをシリーズ項目にドラッグ＆ドロップで移動できます。",
+          "「すべて」にドロップするとシリーズの紐付けが解除されます。"
+        ]
+      },
+      {
+        "title": "翻訳",
+        "items": [
+          "設定でLLMプロバイダー、APIキー、モデルを先に設定してください。",
+          "ビューアヘッダーの翻訳ボタン：スレッドタイトル＋全レスポンスを並列翻訳します。",
+          "レスポンス別翻訳ボタン：個別レスポンスのみ翻訳します。",
+          "Shiftを押しながらクリックすると既存翻訳を無視して強制再翻訳します。",
+          "テキストをドラッグ選択すると選択部分だけ翻訳するボタンが表示されます。",
+          "翻訳削除ボタンで特定レスポンスの翻訳を削除できます。",
+          "同時翻訳数は設定で調整できます（デフォルト：3）。"
+        ]
+      },
+      {
+        "title": "書き出し",
+        "items": [
+          "{icon:download} シリーズまたはスレッドを.laaファイルで書き出します。",
+          ".laaファイルは他のユーザーと共有できます。",
+          "シリーズ書き出し：シリーズヘッダー＋全スレッド含む。",
+          "スレッド書き出し：該当スレッドのみ含む。"
+        ]
+      },
+      {
+        "title": "多言語対応",
+        "items": [
+          "設定でアプリの言語を韓国語/英語/日本語に変更できます。",
+          "すべてのデータフィールドはロケールごとに保存されます。",
+          "編集時にロケールドロップダウンで言語を切り替えられます。",
+          "該当言語のデータがない場合、英語→日本語→韓国語の順で代替表示されます。"
+        ]
+      }
+    ]
+  },
+  "common": {
+    "save": "保存",
+    "cancel": "キャンセル",
+    "delete": "削除",
+    "edit": "編集",
+    "close": "閉じる",
+    "confirm": "確認",
+    "name": "名前",
+    "author": "作者",
+    "link": "リンク",
+    "tags": "タグ",
+    "date": "日付"
+  }
+}
