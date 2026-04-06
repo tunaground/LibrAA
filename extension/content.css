@@ -1,0 +1,165 @@
+/* Container selection mode */
+.libraa-selectable {
+  outline: 2px dashed rgba(79, 123, 232, 0.5) !important;
+  cursor: crosshair !important;
+}
+
+.libraa-selectable:hover {
+  outline: 2px solid rgba(79, 123, 232, 0.8) !important;
+  background-color: rgba(79, 123, 232, 0.05) !important;
+}
+
+/* Selected container */
+.libraa-selected {
+  outline: 2px solid #4f7be8 !important;
+}
+
+/* Japanese block highlight */
+.libraa-block {
+  cursor: pointer;
+  border-radius: 2px;
+  transition: background-color 0.1s;
+}
+
+.libraa-block:hover {
+  background-color: rgba(79, 123, 232, 0.15) !important;
+}
+
+.libraa-block.translating {
+  background-color: rgba(79, 123, 232, 0.1) !important;
+  animation: libraa-pulse 1.5s infinite;
+}
+
+.libraa-block.translated {
+  background-color: rgba(34, 197, 94, 0.1) !important;
+}
+
+@keyframes libraa-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Floating toolbar */
+.libraa-toolbar {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 2147483647;
+  display: flex;
+  gap: 6px;
+  padding: 8px 12px;
+  background: #1a1d23;
+  color: #e8eaef;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 12px;
+  align-items: center;
+}
+
+.libraa-toolbar button {
+  padding: 4px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 11px;
+  font-family: inherit;
+}
+
+.libraa-toolbar .btn-primary {
+  background: #4f7be8;
+  color: #fff;
+}
+
+.libraa-toolbar .btn-primary:hover {
+  background: #3d65cc;
+}
+
+.libraa-toolbar .btn-secondary {
+  background: #374151;
+  color: #e8eaef;
+}
+
+.libraa-toolbar .btn-secondary:hover {
+  background: #4b5563;
+}
+
+.libraa-toolbar .btn-danger {
+  background: #374151;
+  color: #e5484d;
+}
+
+.libraa-toolbar .btn-danger:hover {
+  background: #3a1d1f;
+}
+
+.libraa-toolbar .status {
+  color: #9198a5;
+  margin-left: 4px;
+}
+
+.libraa-toolbar .progress-bar {
+  width: 80px;
+  height: 4px;
+  background: #374151;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.libraa-toolbar .progress-fill {
+  height: 100%;
+  background: #4f7be8;
+  border-radius: 2px;
+  transition: width 0.3s;
+}
+
+/* Settings modal */
+.libraa-settings {
+  position: fixed;
+  bottom: 56px;
+  right: 20px;
+  z-index: 2147483647;
+  width: 280px;
+  padding: 16px;
+  background: #1a1d23;
+  color: #e8eaef;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 12px;
+}
+
+.libraa-settings label {
+  display: block;
+  font-size: 10px;
+  color: #9198a5;
+  margin: 8px 0 3px;
+}
+
+.libraa-settings select,
+.libraa-settings input {
+  width: 100%;
+  padding: 5px 8px;
+  background: #252830;
+  border: 1px solid #374151;
+  border-radius: 4px;
+  color: #e8eaef;
+  font-size: 12px;
+  font-family: inherit;
+  outline: none;
+}
+
+.libraa-settings select:focus,
+.libraa-settings input:focus {
+  border-color: #4f7be8;
+}
+
+.libraa-settings .settings-footer {
+  display: flex;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.libraa-settings .settings-footer button {
+  flex: 1;
+}
