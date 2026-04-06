@@ -190,9 +190,11 @@ async function onBlockClick(e) {
 
 // ===== Auto-translate all blocks in container =====
 async function translateSpan(span) {
+  if (cancelFlag) return;
   span.classList.add("translating");
   try {
     const result = await translateBlock(span.dataset.original);
+    if (cancelFlag) { span.classList.remove("translating"); return; }
     if (result.meaningful) {
       span.dataset.translated = result.translated;
       span.dataset.showing = "translated";
@@ -302,44 +304,54 @@ function toggleSettings() {
   settingsModal = document.createElement("div");
   settingsModal.className = "libraa-settings";
   settingsModal.innerHTML = `
-    <div style="font-weight:600;margin-bottom:8px">LibrAA Settings</div>
-    <label>Provider</label>
-    <select id="libraa-s-provider">
-      <option value="openai">OpenAI</option>
-      <option value="gemini">Google Gemini</option>
-      <option value="claude">Claude</option>
-      <option value="ollama">Ollama (로컬)</option>
-    </select>
-    <div id="libraa-s-apikey-row">
+    <div class="settings-title">LibrAA Settings</div>
+    <div class="settings-group">
+      <label>Provider</label>
+      <select id="libraa-s-provider">
+        <option value="openai">OpenAI</option>
+        <option value="gemini">Google Gemini</option>
+        <option value="claude">Claude</option>
+        <option value="ollama">Ollama (로컬)</option>
+      </select>
+    </div>
+    <div class="settings-group" id="libraa-s-apikey-row">
       <label>API Key</label>
       <input type="password" id="libraa-s-apikey">
     </div>
-    <label>Model</label>
-    <input type="text" id="libraa-s-model">
-    <label>Concurrency</label>
-    <select id="libraa-s-concurrency">
-      <option value="1">1</option>
-      <option value="2">2</option>
-      <option value="3">3</option>
-      <option value="5">5</option>
-      <option value="8">8</option>
-      <option value="10">10</option>
-    </select>
-    <label>Target Language</label>
-    <select id="libraa-s-lang">
-      <option value="ko">한국어</option>
-      <option value="en">English</option>
-      <option value="ja">日本語</option>
-    </select>
-    <label>Highlight Color</label>
-    <select id="libraa-s-hlcolor">
-      <option value="rgba(34, 197, 94, 0.1)">연녹색</option>
-      <option value="rgba(79, 123, 232, 0.1)">연파랑</option>
-      <option value="rgba(234, 179, 8, 0.1)">연노랑</option>
-      <option value="rgba(168, 85, 247, 0.1)">연보라</option>
-      <option value="rgba(239, 68, 68, 0.1)">연빨강</option>
-      <option value="rgba(0, 0, 0, 0)">투명</option>
-    </select>
+    <div class="settings-group">
+      <label>Model</label>
+      <input type="text" id="libraa-s-model">
+    </div>
+    <div class="settings-group">
+      <label>Concurrency</label>
+      <select id="libraa-s-concurrency">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="5">5</option>
+        <option value="8">8</option>
+        <option value="10">10</option>
+      </select>
+    </div>
+    <div class="settings-group">
+      <label>Target Language</label>
+      <select id="libraa-s-lang">
+        <option value="ko">한국어</option>
+        <option value="en">English</option>
+        <option value="ja">日本語</option>
+      </select>
+    </div>
+    <div class="settings-group">
+      <label>Highlight Color</label>
+      <select id="libraa-s-hlcolor">
+        <option value="rgba(34, 197, 94, 0.1)">연녹색</option>
+        <option value="rgba(79, 123, 232, 0.1)">연파랑</option>
+        <option value="rgba(234, 179, 8, 0.1)">연노랑</option>
+        <option value="rgba(168, 85, 247, 0.1)">연보라</option>
+        <option value="rgba(239, 68, 68, 0.1)">연빨강</option>
+        <option value="rgba(0, 0, 0, 0)">투명</option>
+      </select>
+    </div>
     <div class="settings-footer">
       <button class="btn-primary" id="libraa-s-save">저장</button>
       <button class="btn-secondary" id="libraa-s-close">닫기</button>
@@ -418,8 +430,8 @@ function createToolbar() {
 function updateToolbar() {
   if (!toolbar) return;
 
-  const hlBtn = `<button class="btn-secondary" id="libraa-hl-toggle" style="padding:4px 6px" title="번역 하이라이트">${highlightOn ? "🔴" : "⚪"}</button>`;
-  const settingsBtn = '<button class="btn-secondary" id="libraa-settings" style="padding:4px 6px">⚙</button>';
+  const hlBtn = `<button class="btn-secondary" id="libraa-hl-toggle">${highlightOn ? "HL ON" : "HL OFF"}</button>`;
+  const settingsBtn = '<button class="btn-secondary" id="libraa-settings">설정</button>';
 
   if (mode === "idle") {
     toolbar.innerHTML = `
@@ -470,6 +482,10 @@ function updateToolbar() {
     `;
     toolbar.querySelector("#libraa-cancel")?.addEventListener("click", () => {
       cancelFlag = true;
+      // Remove translating state from all spans immediately
+      document.querySelectorAll(".libraa-block.translating").forEach((el) => el.classList.remove("translating"));
+      mode = "ready";
+      updateToolbar();
     });
   }
 

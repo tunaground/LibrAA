@@ -119,47 +119,71 @@
   bottom: 56px;
   right: 20px;
   z-index: 2147483647;
-  width: 280px;
-  padding: 16px;
+  width: 300px;
+  padding: 20px;
   background: #1a1d23;
   color: #e8eaef;
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 12px;
+  border: 1px solid #2e313b;
+}
+
+.libraa-settings .settings-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #2e313b;
+}
+
+.libraa-settings .settings-group {
+  margin-bottom: 12px;
 }
 
 .libraa-settings label {
   display: block;
   font-size: 10px;
+  font-weight: 500;
   color: #9198a5;
-  margin: 8px 0 3px;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .libraa-settings select,
 .libraa-settings input {
   width: 100%;
-  padding: 5px 8px;
+  height: 32px;
+  padding: 0 10px;
   background: #252830;
   border: 1px solid #374151;
-  border-radius: 4px;
+  border-radius: 6px;
   color: #e8eaef;
   font-size: 12px;
   font-family: inherit;
   outline: none;
+  transition: border-color 0.15s;
 }
 
 .libraa-settings select:focus,
 .libraa-settings input:focus {
   border-color: #4f7be8;
+  box-shadow: 0 0 0 2px rgba(79, 123, 232, 0.15);
 }
 
 .libraa-settings .settings-footer {
   display: flex;
-  gap: 6px;
-  margin-top: 12px;
+  gap: 8px;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #2e313b;
 }
 
 .libraa-settings .settings-footer button {
   flex: 1;
+  height: 32px;
+  border-radius: 6px;
+  font-weight: 500;
 }
