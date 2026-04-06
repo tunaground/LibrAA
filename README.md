@@ -77,7 +77,45 @@ npm run tauri build  # Production build
 | OpenAI | Required | gpt-4.1-nano | Cheapest, fast |
 | Gemini | Required | gemini-2.5-flash | Free tier available |
 | Claude | Required | claude-sonnet-4 | Best quality |
-| Ollama | Not needed | gemma4:e4b | Free, local |
+| Ollama | Not needed | qwen3:4b | Free, local |
+
+#### Ollama Setup
+
+Ollama를 사용하려면 먼저 [Ollama](https://ollama.com/)를 설치하고 모델을 다운로드합니다.
+
+```bash
+ollama pull qwen3:4b
+```
+
+Chrome 확장에서 사용할 경우, CORS 허용이 필요합니다.
+
+**macOS (Ollama 앱 사용 시):**
+```bash
+launchctl setenv OLLAMA_ORIGINS "*"
+# Ollama 앱 재시작
+```
+
+**macOS (터미널에서 직접 실행):**
+```bash
+OLLAMA_ORIGINS="*" ollama serve
+```
+
+**Windows (시스템 환경변수 설정):**
+1. 시스템 환경변수에 `OLLAMA_ORIGINS` = `*` 추가
+   - 설정 > 시스템 > 정보 > 고급 시스템 설정 > 환경 변수
+2. Ollama 재시작
+
+또는 PowerShell에서:
+```powershell
+$env:OLLAMA_ORIGINS="*"; ollama serve
+```
+
+추천 모델:
+| 모델 | 크기 | 특징 |
+|------|------|------|
+| qwen3:4b | 3GB | 빠르고 일본어 번역 품질 좋음 |
+| gemma3:12b | 8GB | 느리지만 품질 우수 |
+| gemma4:e4b | 큼 | 높은 품질, 느림 |
 
 ### Chrome Extension
 
