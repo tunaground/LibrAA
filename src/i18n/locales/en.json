@@ -92,6 +92,13 @@
       "concurrency": "Concurrent Translations",
       "batchBlocks": "Batch Block Translation",
       "batchBlocksDesc": "Send all blocks in one API call per response (saves API calls)"
+    },
+    "data": {
+      "title": "Data Management",
+      "openFolder": "Open Data Folder",
+      "reset": "Reset Data",
+      "resetConfirm": "All data (DB, settings, API keys) will be deleted. Continue?",
+      "resetDesc": "DB, settings, and API keys will be deleted and the app will restart."
     }
   },
   "manual": {

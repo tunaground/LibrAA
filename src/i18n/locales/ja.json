@@ -92,6 +92,13 @@
       "concurrency": "同時翻訳数",
       "batchBlocks": "ブロック一括翻訳",
       "batchBlocksDesc": "レスポンス内のブロックを1回のAPI呼び出しで処理（API節約）"
+    },
+    "data": {
+      "title": "データ管理",
+      "openFolder": "データフォルダを開く",
+      "reset": "データ初期化",
+      "resetConfirm": "すべてのデータ（DB、設定、APIキー）が削除されます。続けますか？",
+      "resetDesc": "DB、設定ファイル、APIキーがすべて削除され、アプリが再起動します。"
     }
   },
   "manual": {

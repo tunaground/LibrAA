@@ -240,6 +240,58 @@ export function SettingsDialog({ onClose }: SettingsDialogProps) {
                 </div>
               </div>
             </div>
+
+            {/* Divider */}
+            <div style={{ borderTop: "1px solid var(--color-border)" }} />
+
+            {/* Data management */}
+            <div className="flex flex-col" style={{ gap: "12px" }}>
+              <h3 style={{ fontSize: "13px", fontWeight: 600 }}>
+                {t("settings.data.title")}
+              </h3>
+              <div className="flex" style={{ gap: "8px" }}>
+                <button
+                  className="btn btn-secondary"
+                  onClick={async () => {
+                    try {
+                      const { appDataDir } = await import("@tauri-apps/api/path");
+                      const { open } = await import("@tauri-apps/plugin-shell");
+                      const dir = await appDataDir();
+                      await open(dir);
+                    } catch (e) {
+                      console.error("Failed to open data folder:", e);
+                    }
+                  }}
+                  style={{ fontSize: "12px" }}
+                >
+                  {t("settings.data.openFolder")}
+                </button>
+                <button
+                  className="btn btn-secondary"
+                  onClick={async () => {
+                    if (!confirm(t("settings.data.resetConfirm"))) return;
+                    try {
+                      const { appDataDir } = await import("@tauri-apps/api/path");
+                      const { remove, exists } = await import("@tauri-apps/plugin-fs");
+                      const dir = await appDataDir();
+                      const dbPath = `${dir}libraa.db`;
+                      const settingsPath = `${dir}settings.json`;
+                      if (await exists(dbPath)) await remove(dbPath);
+                      if (await exists(settingsPath)) await remove(settingsPath);
+                      window.location.reload();
+                    } catch (e) {
+                      console.error("Failed to reset data:", e);
+                    }
+                  }}
+                  style={{ fontSize: "12px", color: "var(--color-danger)" }}
+                >
+                  {t("settings.data.reset")}
+                </button>
+              </div>
+              <p style={{ fontSize: "10px", color: "var(--color-text-tertiary)" }}>
+                {t("settings.data.resetDesc")}
+              </p>
+            </div>
           </div>
         </div>
 

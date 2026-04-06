@@ -92,6 +92,13 @@
       "concurrency": "동시 번역 수",
       "batchBlocks": "블록 배치 번역",
       "batchBlocksDesc": "리스폰스 내 블록들을 한 번에 묶어 요청 (API 호출 절약)"
+    },
+    "data": {
+      "title": "데이터 관리",
+      "openFolder": "데이터 폴더 열기",
+      "reset": "데이터 초기화",
+      "resetConfirm": "모든 데이터(DB, 설정, API 키)가 삭제됩니다. 계속하시겠습니까?",
+      "resetDesc": "DB, 설정 파일, API 키가 모두 삭제되고 앱이 재시작됩니다."
     }
   },
   "manual": {
