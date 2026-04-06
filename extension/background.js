@@ -24,12 +24,30 @@ chrome.action.onClicked.addListener(async (tab) => {
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (msg.type === "llm-call") {
-    handleLLMCall(msg.config, msg.systemPrompt, msg.userMessage)
+    handleLLMCallWithRetry(msg.config, msg.systemPrompt, msg.userMessage)
       .then((result) => sendResponse({ ok: true, text: result }))
       .catch((err) => sendResponse({ ok: false, error: String(err) }));
     return true; // async response
   }
 });
+
+async function handleLLMCallWithRetry(config, systemPrompt, userMessage) {
+  const maxRetries = 3;
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      return await handleLLMCall(config, systemPrompt, userMessage);
+    } catch (err) {
+      const status = err.message?.match(/\b(429|503|529)\b/);
+      if (status && attempt < maxRetries - 1) {
+        const delay = Math.min(2000 * Math.pow(2, attempt), 10000);
+        console.log(`[LibrAA] ${status[0]} error, retrying in ${delay}ms (${attempt + 1}/${maxRetries})`);
+        await new Promise((r) => setTimeout(r, delay));
+        continue;
+      }
+      throw err;
+    }
+  }
+}
 
 async function handleLLMCall(config, systemPrompt, userMessage) {
   const { provider, apiKey, model } = config;

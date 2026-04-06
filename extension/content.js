@@ -24,6 +24,7 @@ let highlightOn = true;
 let highlightColor = "rgba(34, 197, 94, 0.1)";
 let totalCount = 0;
 let cancelFlag = false;
+let translateStartTime = 0;
 
 // ===== Highlight style =====
 let highlightStyleEl = null;
@@ -119,6 +120,83 @@ JSON only.`;
   return { meaningful: false, translated: text };
 }
 
+// ===== Batch translation =====
+const BATCH_CHAR_LIMITS = { ollama: 1000, openai: 3000, gemini: 3000, claude: 3000 };
+
+function buildBatches(blocks) {
+  const limit = BATCH_CHAR_LIMITS[config?.provider] || 2000;
+  const batches = [];
+  let current = [];
+  let currentLen = 0;
+
+  for (const span of blocks) {
+    const text = span.dataset.original;
+    const len = text.length;
+
+    if (current.length > 0 && currentLen + len > limit) {
+      batches.push(current);
+      current = [];
+      currentLen = 0;
+    }
+    current.push(span);
+    currentLen += len;
+  }
+  if (current.length > 0) batches.push(current);
+  return batches;
+}
+
+async function translateBatch(spans) {
+  const langNames = { ko: "Korean", en: "English", ja: "Japanese" };
+  const langName = langNames[targetLang] || targetLang;
+  const texts = spans.map((s) => s.dataset.original);
+  const numbered = texts.map((t, i) => `[${i}] ${t}`).join("\n");
+
+  const systemPrompt = `Translate Japanese text fragments to ${langName}.
+You receive numbered fragments. For each, decide if it's meaningful text or decorative (kanji shading, symbols).
+Single words, names, katakana loanwords ARE meaningful — translate them.
+
+Respond as a JSON array:
+[{"i":0,"m":true,"t":"translation in ${langName}"},{"i":1,"m":false},...]
+
+"i" = index, "m" = meaningful, "t" = translation (only when m=true, MUST be in ${langName}).
+JSON only. No explanation.`;
+
+  try {
+    const result = await callLLM(systemPrompt, numbered);
+    const jsonStr = result.replace(/```json?\s*/g, "").replace(/```/g, "").trim();
+    const parsed = JSON.parse(jsonStr);
+
+    const failedSpans = [];
+    for (let i = 0; i < spans.length; i++) {
+      if (cancelFlag) break;
+      const span = spans[i];
+      const entry = parsed.find((p) => p.i === i);
+      if (!entry) {
+        // LLM didn't return this index — retry individually
+        failedSpans.push(span);
+      } else if (entry.m && entry.t && entry.t.trim() !== texts[i].trim() && !isStillJapanese(entry.t)) {
+        // Meaningful — apply translation
+        span.dataset.translated = entry.t;
+        span.dataset.showing = "translated";
+        span.textContent = entry.t;
+        span.classList.add("translated");
+        span.classList.remove("translating");
+        translatedCount++;
+        updateToolbar();
+      } else {
+        // Not meaningful (decorative) — skip, no retry needed
+        span.classList.remove("translating");
+        translatedCount++;
+        updateToolbar();
+      }
+    }
+    return failedSpans;
+  } catch {
+    // Batch failed — return all spans for individual fallback
+    return spans;
+  }
+}
+
 // ===== Wrap Japanese blocks in spans =====
 function wrapJaBlocks(container) {
   const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, null);
@@ -153,20 +231,30 @@ function wrapJaBlocks(container) {
   }
 }
 
+// ===== Set span text preserving newlines =====
+function setSpanText(span, text) {
+  span.innerHTML = "";
+  const lines = text.split("\n");
+  for (let i = 0; i < lines.length; i++) {
+    if (i > 0) span.appendChild(document.createElement("br"));
+    span.appendChild(document.createTextNode(lines[i]));
+  }
+}
+
 // ===== Block click handler =====
 async function onBlockClick(e) {
   if (!config) return;
-  const span = e.target;
+  const span = e.target.closest(".libraa-block") || e.target;
   if (span.classList.contains("translating")) return;
 
   // Toggle between original and translated
   if (span.classList.contains("translated")) {
     const showing = span.dataset.showing || "translated";
     if (showing === "translated") {
-      span.textContent = span.dataset.original;
+      setSpanText(span, span.dataset.original);
       span.dataset.showing = "original";
     } else {
-      span.textContent = span.dataset.translated;
+      setSpanText(span, span.dataset.translated);
       span.dataset.showing = "translated";
     }
     return;
@@ -179,7 +267,7 @@ async function onBlockClick(e) {
     if (result.meaningful) {
       span.dataset.translated = result.translated;
       span.dataset.showing = "translated";
-      span.textContent = result.translated;
+      setSpanText(span, result.translated);
       span.classList.add("translated");
     }
   } catch (err) {
@@ -216,19 +304,56 @@ async function translateAll() {
   totalCount = blocks.length;
   translatedCount = 0;
   cancelFlag = false;
+  translateStartTime = Date.now();
   mode = "translating";
   updateToolbar();
 
+  // Mark all as translating
+  blocks.forEach((s) => s.classList.add("translating"));
+
+  // Dynamic batching by text length
+  const batches = buildBatches(blocks);
   const concurrency = config.concurrency || 3;
-  for (let i = 0; i < blocks.length; i += concurrency) {
+
+  for (let i = 0; i < batches.length; i += concurrency) {
     if (cancelFlag) break;
-    const batch = blocks.slice(i, i + concurrency);
-    await Promise.all(batch.map((span) => {
-      if (cancelFlag) return Promise.resolve();
-      return translateSpan(span);
+    const chunk = batches.slice(i, i + concurrency);
+    const results = await Promise.all(chunk.map((batch) => {
+      if (cancelFlag) return Promise.resolve([]);
+      if (batch.length === 1) {
+        // Single block — use individual translation
+        return translateSpan(batch[0]).then(() => []);
+      }
+      return translateBatch(batch);
     }));
+
+    // Fallback: re-batch failed spans with smaller limit, then individual as last resort
+    const failedSpans = results.flat();
+    if (failedSpans.length > 0) {
+      const smallBatches = buildBatches(failedSpans);
+      for (let j = 0; j < smallBatches.length; j += concurrency) {
+        if (cancelFlag) break;
+        const retryChunk = smallBatches.slice(j, j + concurrency);
+        const retryResults = await Promise.all(retryChunk.map((batch) => {
+          if (cancelFlag) return Promise.resolve([]);
+          if (batch.length === 1) return translateSpan(batch[0]).then(() => []);
+          return translateBatch(batch);
+        }));
+        // Last resort: individual translation with concurrency
+        const stillFailed = retryResults.flat();
+        for (let k = 0; k < stillFailed.length; k += concurrency) {
+          if (cancelFlag) break;
+          await Promise.all(stillFailed.slice(k, k + concurrency).map((span) => {
+            if (cancelFlag) return Promise.resolve();
+            return translateSpan(span);
+          }));
+        }
+      }
+    }
   }
 
+  // Clean up any remaining translating state
+  blocks.forEach((s) => s.classList.remove("translating"));
   mode = "ready";
   updateToolbar();
 }
@@ -472,11 +597,22 @@ function updateToolbar() {
     toolbar.querySelector("#libraa-reset")?.addEventListener("click", resetAll);
   } else if (mode === "translating") {
     const pct = totalCount > 0 ? Math.round((translatedCount / totalCount) * 100) : 0;
+    let etaStr = "";
+    if (translatedCount > 0) {
+      const elapsed = (Date.now() - translateStartTime) / 1000;
+      const rate = translatedCount / elapsed;
+      const remaining = Math.round((totalCount - translatedCount) / rate);
+      if (remaining >= 60) {
+        etaStr = `${Math.floor(remaining / 60)}m ${remaining % 60}s`;
+      } else {
+        etaStr = `${remaining}s`;
+      }
+    }
     toolbar.innerHTML = `
       <span style="font-weight:600">LibrAA</span>
       <span class="status">${translatedCount}/${totalCount}</span>
       <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
-      <span class="status">${pct}%</span>
+      <span class="status">${pct}%${etaStr ? ` · ${etaStr}` : ""}</span>
       <button class="btn-danger" id="libraa-cancel">취소</button>
       ${hlBtn}${settingsBtn}
     `;
@@ -511,6 +647,81 @@ function toggleToolbar() {
     }
   }
 }
+
+// ===== Manual selection translation =====
+let selectionPopup = null;
+
+function removeSelectionPopup() {
+  if (selectionPopup) {
+    selectionPopup.remove();
+    selectionPopup = null;
+  }
+}
+
+document.addEventListener("mouseup", (e) => {
+  // Ignore clicks on toolbar/popup/settings
+  if (toolbar?.contains(e.target) || selectionPopup?.contains(e.target) || settingsModal?.contains(e.target)) return;
+
+  removeSelectionPopup();
+
+  const sel = window.getSelection();
+  if (!sel || sel.isCollapsed || !config) return;
+
+  const rawText = sel.toString();
+  if (!rawText.trim()) return;
+  const text = rawText;
+
+  const range = sel.getRangeAt(0);
+  const rect = range.getBoundingClientRect();
+
+  selectionPopup = document.createElement("div");
+  selectionPopup.className = "libraa-selection-popup";
+  selectionPopup.textContent = "번역";
+  selectionPopup.style.left = `${rect.left + rect.width / 2}px`;
+  selectionPopup.style.top = `${rect.top + window.scrollY - 32}px`;
+  document.body.appendChild(selectionPopup);
+
+  selectionPopup.addEventListener("click", async () => {
+    removeSelectionPopup();
+
+    // Wrap selection in a libraa-block span, preserving inner DOM (newlines, <br>, etc.)
+    const span = document.createElement("span");
+    span.className = "libraa-block translating";
+    span.dataset.original = text;
+    span.addEventListener("click", onBlockClick);
+
+    try {
+      // Extract original DOM nodes and move them into the span
+      const contents = range.extractContents();
+      span.appendChild(contents);
+      range.insertNode(span);
+      sel.removeAllRanges();
+
+      // Preserve leading/trailing whitespace from original
+      const leadingWS = text.match(/^(\s*)/)[1];
+      const trailingWS = text.match(/(\s*)$/)[1];
+      const trimmedText = text.trim();
+
+      const result = await translateBlock(trimmedText);
+      if (result.meaningful) {
+        const translated = leadingWS + result.translated + trailingWS;
+        span.dataset.translated = translated;
+        span.dataset.showing = "translated";
+        setSpanText(span, translated);
+        span.classList.add("translated");
+      }
+    } catch (err) {
+      console.error("[LibrAA] Manual translation failed:", err);
+    }
+    span.classList.remove("translating");
+  });
+});
+
+document.addEventListener("mousedown", (e) => {
+  if (selectionPopup && !selectionPopup.contains(e.target)) {
+    removeSelectionPopup();
+  }
+});
 
 // ===== Init =====
 async function init() {
