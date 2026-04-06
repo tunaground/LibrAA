@@ -6,6 +6,24 @@ on:
       - 'v*'
 
 jobs:
+  extension:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Package extension
+        run: cd extension && zip -r ../LibrAA-Extension-${{ github.ref_name }}.zip .
+
+      - name: Upload extension to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: LibrAA-Extension-${{ github.ref_name }}.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   release:
     permissions:
       contents: write
@@ -65,6 +83,7 @@ jobs:
             - **macOS (Apple Silicon)**: `.dmg` (aarch64)
             - **macOS (Intel)**: `.dmg` (x86_64)
             - **Windows**: `.msi` / `.exe`
+            - **Chrome Extension**: `.zip` (압축 해제 후 chrome://extensions에서 로드)
           releaseDraft: false
           prerelease: false
           args: ${{ matrix.args }}
