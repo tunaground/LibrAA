@@ -146,7 +146,7 @@ details .toc-list li a:hover { color: var(--primary); }
 .response-header .author.trip { font-weight: 700; }
 .response-header .id, .response-header .date { color: var(--text3); }
 .response-body {
-  font-family: "Saitamaar", monospace;
+  font-family: "ＭＳ Ｐゴシック", "MS PGothic", "IPAMonaPGothic", Mona, Monapo, "Saitamaar", "NanumGothicCoding", monospace;
   font-size: 14px;
   line-height: 1.2;
   white-space: pre;
