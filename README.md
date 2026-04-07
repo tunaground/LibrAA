@@ -49,6 +49,16 @@ Download from [GitHub Releases](https://github.com/tunaground/LibrAA/releases):
 4. Enable "Developer mode"
 5. Click "Load unpacked" and select the extracted folder
 
+### Safari Extension (macOS)
+
+1. Download `LibrAA-Safari-Extension-*.zip` from [Releases](https://github.com/tunaground/LibrAA/releases)
+2. Extract the zip
+3. Move `LibrAA Translator.app` to Applications
+4. Run the app once
+5. Safari > 설정 > 고급 > **"웹 개발자용 기능 보기"** 활성화
+6. Safari > 개발 > **"서명되지 않은 확장 허용"** 활성화
+7. Safari > 설정 > 확장에서 **LibrAA Translator** 활성화
+
 ### Build from Source
 
 Requirements: Node.js 22+, Rust 1.77+
