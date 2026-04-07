@@ -664,8 +664,10 @@ function removeSelectionPopup() {
 }
 
 document.addEventListener("mouseup", (e) => {
+  // Only show selection popup when toolbar is active
+  if (!toolbar) return;
   // Ignore clicks on toolbar/popup/settings
-  if (toolbar?.contains(e.target) || selectionPopup?.contains(e.target) || settingsModal?.contains(e.target)) return;
+  if (toolbar.contains(e.target) || selectionPopup?.contains(e.target) || settingsModal?.contains(e.target)) return;
 
   removeSelectionPopup();
 

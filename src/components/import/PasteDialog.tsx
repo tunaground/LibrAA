@@ -1,10 +1,28 @@
-import { useState } from "react";
+import { useState, useMemo, useRef, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { parseThreadText } from "../../lib/parser";
+import { parseThreadText, testPattern, countCaptureGroups, DEFAULT_HEADER_PATTERN, LABELED_HEADER_PATTERN, DEFAULT_GROUP_MAP } from "../../lib/parser";
+import type { GroupMap } from "../../lib/parser";
 import { createThreadWithResponses } from "../../lib/db";
 import { useAppStore } from "../../stores/app-store";
 import type { ParsedThread } from "../../types";
-import { X } from "lucide-react";
+import { X, ChevronDown, ChevronRight } from "lucide-react";
+
+const GROUP_COLORS = [
+  "rgba(79, 123, 232, 0.25)",   // #1 blue
+  "rgba(34, 197, 94, 0.25)",    // #2 green
+  "rgba(234, 179, 8, 0.25)",    // #3 yellow
+  "rgba(168, 85, 247, 0.25)",   // #4 purple
+  "rgba(239, 68, 68, 0.25)",    // #5 red
+  "rgba(6, 182, 212, 0.25)",    // #6 cyan
+];
+
+const GROUP_FIELDS = [
+  { value: "sequence", label: "Sequence" },
+  { value: "authorName", label: "Author" },
+  { value: "postedAt", label: "Date" },
+  { value: "authorId", label: "ID" },
+  { value: "", label: "(무시)" },
+] as const;
 
 interface PasteDialogProps {
   onClose: () => void;
@@ -19,9 +37,29 @@ export function PasteDialog({ onClose, onSaved }: PasteDialogProps) {
   const [threadName, setThreadName] = useState("");
   const [sourceLocale, setSourceLocale] = useState("ja");
   const [saving, setSaving] = useState(false);
+  const [regexOpen, setRegexOpen] = useState(false);
+  const [customPattern, setCustomPattern] = useState(DEFAULT_HEADER_PATTERN);
+  const [groupMap, setGroupMap] = useState<GroupMap>({ ...DEFAULT_GROUP_MAP });
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const highlightRef = useRef<HTMLDivElement>(null);
+
+  const patternResult = useMemo(() => {
+    if (!rawText) return { matchedLines: new Map(), firstMatch: null, matchCount: 0, error: null };
+    const isDefault = customPattern === DEFAULT_HEADER_PATTERN;
+    return testPattern(rawText, customPattern, isDefault ? LABELED_HEADER_PATTERN : undefined);
+  }, [rawText, customPattern]);
+
+  const groupCount = useMemo(() => countCaptureGroups(customPattern), [customPattern]);
+
+  const handleScroll = useCallback(() => {
+    if (textareaRef.current && highlightRef.current) {
+      highlightRef.current.scrollTop = textareaRef.current.scrollTop;
+      highlightRef.current.scrollLeft = textareaRef.current.scrollLeft;
+    }
+  }, []);
 
   const handleParse = () => {
-    const result = parseThreadText(rawText);
+    const result = parseThreadText(rawText, customPattern, groupMap);
     setParsed(result);
   };
 
@@ -127,19 +165,188 @@ export function PasteDialog({ onClose, onSaved }: PasteDialogProps) {
                   />
                 </div>
               </div>
-              <textarea
-                value={rawText}
-                onChange={(e) => setRawText(e.target.value)}
-                placeholder={t("import.pasteHint")}
-                className="input"
-                style={{
-                  height: "300px",
-                  fontFamily: "var(--font-aa)",
-                  fontSize: "13px",
-                  lineHeight: "1.3",
-                  resize: "vertical",
-                }}
-              />
+
+              {/* Regex settings */}
+              <div style={{
+                border: "1px solid var(--color-border)",
+                borderRadius: "var(--radius-md)",
+                overflow: "hidden",
+              }}>
+                <button
+                  type="button"
+                  onClick={() => setRegexOpen(!regexOpen)}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    width: "100%",
+                    padding: "8px 12px",
+                    background: "var(--color-bg-secondary)",
+                    border: "none",
+                    cursor: "pointer",
+                    fontSize: "12px",
+                    fontWeight: 500,
+                    color: "var(--color-text-secondary)",
+                    fontFamily: "var(--font-sans)",
+                  }}
+                >
+                  {regexOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                  Header Regex
+                  {rawText && (
+                    <span style={{
+                      marginLeft: "auto",
+                      fontSize: "11px",
+                      color: patternResult.error ? "var(--color-danger)" : "var(--color-primary)",
+                    }}>
+                      {patternResult.error ? "Invalid regex" : `${patternResult.matchCount ?? patternResult.matchedLines.size} headers`}
+                    </span>
+                  )}
+                </button>
+                {regexOpen && (
+                  <div style={{ padding: "10px 12px", borderTop: "1px solid var(--color-border)", display: "flex", flexDirection: "column", gap: "8px" }}>
+                    <input
+                      type="text"
+                      value={customPattern}
+                      onChange={(e) => setCustomPattern(e.target.value)}
+                      className="input"
+                      spellCheck={false}
+                      style={{ fontFamily: "monospace", fontSize: "11px" }}
+                    />
+                    {patternResult.error && (
+                      <span style={{ fontSize: "11px", color: "var(--color-danger)" }}>{patternResult.error}</span>
+                    )}
+                    {/* Group mapping */}
+                    {groupCount > 0 && (
+                      <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                        {Array.from({ length: groupCount }, (_, i) => {
+                          const groupIdx = i + 1;
+                          const currentField = Object.entries(groupMap).find(([, v]) => v === groupIdx)?.[0] ?? "";
+                          const sampleValue = patternResult.firstMatch?.[groupIdx] ?? "";
+                          return (
+                            <div key={i} style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                              <span style={{
+                                display: "inline-block",
+                                width: "8px",
+                                height: "8px",
+                                borderRadius: "2px",
+                                background: GROUP_COLORS[i % GROUP_COLORS.length],
+                                border: "1px solid rgba(0,0,0,0.15)",
+                                flexShrink: 0,
+                              }} />
+                              <span style={{ fontSize: "10px", color: "var(--color-text-tertiary)", minWidth: "16px" }}>#{groupIdx}</span>
+                              <select
+                                value={currentField}
+                                onChange={(e) => {
+                                  const newMap = { ...groupMap };
+                                  // Clear previous assignment of this group
+                                  for (const k of Object.keys(newMap) as (keyof GroupMap)[]) {
+                                    if (newMap[k] === groupIdx) newMap[k] = 0;
+                                  }
+                                  if (e.target.value) {
+                                    newMap[e.target.value as keyof GroupMap] = groupIdx;
+                                  }
+                                  setGroupMap(newMap);
+                                }}
+                                className="input"
+                                style={{ width: "90px", height: "24px", fontSize: "10px", padding: "0 4px" }}
+                              >
+                                {GROUP_FIELDS.map((f) => (
+                                  <option key={f.value} value={f.value}>{f.label}</option>
+                                ))}
+                              </select>
+                              {sampleValue && (
+                                <span style={{
+                                  fontSize: "10px",
+                                  color: "var(--color-text-tertiary)",
+                                  maxWidth: "120px",
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                  whiteSpace: "nowrap",
+                                }}>
+                                  {sampleValue}
+                                </span>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Textarea with highlight overlay */}
+              <div style={{ position: "relative", height: "300px" }}>
+                <div
+                  ref={highlightRef}
+                  aria-hidden
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    overflow: "hidden",
+                    padding: "7px 10px",
+                    fontFamily: "var(--font-aa)",
+                    fontSize: "13px",
+                    lineHeight: "1.3",
+                    whiteSpace: "pre",
+                    pointerEvents: "none",
+                    border: "1px solid transparent",
+                    borderRadius: "var(--radius-sm)",
+                  }}
+                >
+                  {rawText.split("\n").map((line, i) => {
+                    const lineHL = patternResult.matchedLines.get(i);
+                    if (!lineHL) {
+                      return <div key={i} style={{ color: "transparent", marginLeft: "-10px", marginRight: "-10px", paddingLeft: "10px", paddingRight: "10px" }}>{line || "\u00A0"}</div>;
+                    }
+                    // Build spans with group-colored backgrounds
+                    const segments: { text: string; color: string }[] = [];
+                    let pos = 0;
+                    const ranges = [...lineHL.groupRanges]
+                      .filter((r) => r.start >= 0)
+                      .sort((a, b) => a.start - b.start);
+                    for (const r of ranges) {
+                      if (r.start > pos) {
+                        segments.push({ text: line.slice(pos, r.start), color: "rgba(200,200,200,0.15)" });
+                      }
+                      segments.push({ text: line.slice(r.start, r.end), color: GROUP_COLORS[r.group % GROUP_COLORS.length] });
+                      pos = r.end;
+                    }
+                    if (pos < line.length) {
+                      segments.push({ text: line.slice(pos), color: ranges.length > 0 ? "rgba(200,200,200,0.15)" : "rgba(200,200,200,0.1)" });
+                    }
+                    if (segments.length === 0) {
+                      segments.push({ text: line || "\u00A0", color: "rgba(200,200,200,0.1)" });
+                    }
+                    return (
+                      <div key={i} style={{ color: "transparent", marginLeft: "-10px", marginRight: "-10px", paddingLeft: "10px", paddingRight: "10px" }}>
+                        {segments.map((s, j) => (
+                          <span key={j} style={{ background: s.color }}>{s.text}</span>
+                        ))}
+                      </div>
+                    );
+                  })}
+                </div>
+                <textarea
+                  ref={textareaRef}
+                  value={rawText}
+                  onChange={(e) => setRawText(e.target.value)}
+                  onScroll={handleScroll}
+                  placeholder={t("import.pasteHint")}
+                  className="input"
+                  style={{
+                    position: "relative",
+                    height: "100%",
+                    width: "100%",
+                    fontFamily: "var(--font-aa)",
+                    fontSize: "13px",
+                    lineHeight: "1.3",
+                    resize: "none",
+                    background: "transparent",
+                    caretColor: "var(--color-text)",
+                  }}
+                />
+              </div>
             </div>
           ) : (
             <div className="flex flex-col" style={{ gap: "14px" }}>
